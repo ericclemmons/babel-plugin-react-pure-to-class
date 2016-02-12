@@ -62,8 +62,6 @@ export default function({ types: t, template }) {
 
   const isConst = (node) => node.kind === "const";
 
-  const isRootLevel = (path) => path.scope && path.scope.parent && parent.scope.parent.block && path.scope.parent.block.type === "Program";
-
   const functionToClass = (name, node) => {
     const id = t.identifier(name);
     const superClass = t.identifier("React.Component");
@@ -79,7 +77,10 @@ export default function({ types: t, template }) {
   };
 
   const getClassBody = (node) => {
-    const body = node.body.body;
+    const body = (node.body.type === "BlockStatement")
+      ? node.body.body : [t.returnStatement(node.body)]
+    ;
+
     const name = t.identifier("render");
     const args = [];
 
@@ -102,7 +103,6 @@ export default function({ types: t, template }) {
     visitor: {
       FunctionDeclaration(path) {
         if (
-          !isRootLevel(path) ||
           !hasComponentName(path.node) ||
           !hasJSX(path)
         ) {
