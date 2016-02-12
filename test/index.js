@@ -9,6 +9,15 @@ const options = {
   plugins: [
     "syntax-jsx",
     "./src/plugin.js",
+    ["react-transform", {
+      transforms: [
+        {
+          transform: "react-transform-hmr",
+          imports: ["react"],
+          locals: ["module"],
+        },
+      ],
+    }]
   ],
 };
 
