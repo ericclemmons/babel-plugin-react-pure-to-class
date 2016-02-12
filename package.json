@@ -1,0 +1,27 @@
+{
+  "name": "babel-plugin-functional-hmr",
+  "version": "1.0.0",
+  "description": "Enable Hot Module Replacement (HMR) for Functional/Stateless Components",
+  "main": "dist/index.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ericclemmons/babel-plugin-functional-hmr.git"
+  },
+  "keywords": [
+    "babel-plugin",
+    "hmr",
+    "react",
+    "functional",
+    "components"
+  ],
+  "author": "Eric Clemmons <eric@smarterspam.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ericclemmons/babel-plugin-functional-hmr/issues"
+  },
+  "homepage": "https://github.com/ericclemmons/babel-plugin-functional-hmr#readme",
+  "devDependencies": {
+  }
+}
