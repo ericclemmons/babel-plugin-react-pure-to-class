@@ -1,4 +1,3 @@
-
 export default function({ types: t, template }) {
   const declareParam = (param, i) => {
     if (param.type === "Identifier") {
@@ -36,7 +35,44 @@ export default function({ types: t, template }) {
   };
 
   const declareParams = (params) => params.map(declareParam);
-  const hasComponentName = (node) => node.id.type === "Identifier" && node.id.name.match(/^[A-Z]\w+$/);
+
+  const functionToClass = (id, path) => {
+    const superClass = t.identifier("React.Component");
+    const decorators = [];
+    const body = getClassBody(path);
+
+    const Component = t.classDeclaration(
+      id,
+      superClass,
+      body,
+      decorators,
+    );
+
+    return Component;
+  };
+
+  const getClassBody = (path) => {
+    const body = (path.node.body.type === "BlockStatement")
+      ? path.node.body.body : [t.returnStatement(path.node.body)]
+    ;
+
+    const name = t.identifier("render");
+    const args = [];
+
+    const render = t.classMethod(
+      "method",
+      name,
+      args,
+      t.blockStatement([
+        ...declareParams(path.node.params),
+        ...body,
+      ], [])
+    );
+
+    return t.classBody([
+      render,
+    ]);
+  };
 
   const hasJSX = (path) => {
     const state = { jsx: false };
@@ -51,88 +87,99 @@ export default function({ types: t, template }) {
     return state.jsx;
   };
 
-  const importReact = (path) => {
-    const react = t.importDeclaration(
-      [t.importDefaultSpecifier(t.identifier("React"))],
-      t.stringLiteral("react"),
-    );
+  const importReact = (file) => {
+    if (!file.path.scope.references.React) {
+      const react = t.importDeclaration(
+        [t.importDefaultSpecifier(t.identifier("React"))],
+        t.stringLiteral("react"),
+      );
 
-    path.insertBefore(react);
-  };
+      const id = file.addImport("react", "default", "React");
+      id.name = "React";
+    }
+  }
 
-  const isConst = (node) => node.kind === "const";
+  const isCapitalized = (name) => name.match(/^[A-Z]\w+$/);
 
-  const functionToClass = (name, node) => {
+  const FunctionExpression = (path, { file }) => {
+    if (path.parent.type === "CallExpression") {
+      FunctionDeclaration(path, { file });
+      return;
+    }
+
+    const variable = path.parent;
+
+    if (variable.type !== "VariableDeclarator") {
+      return;
+    }
+
+    const declaration = path.parentPath.parentPath;
+
+    if (declaration.type !== "VariableDeclaration") {
+      return;
+    }
+
+    if (!declaration.kind === "const") {
+      return;
+    }
+
+    const { name } = variable.id;
+
+    if (!isCapitalized(name)) {
+      return;
+    }
+
+    if (!hasJSX(path)) {
+      return;
+    }
+
     const id = t.identifier(name);
-    const superClass = t.identifier("React.Component");
-    const decorators = [];
-    const body = getClassBody(node);
+    const Component = functionToClass(id, path);
 
-    return t.classDeclaration(
-      id,
-      superClass,
-      body,
-      decorators,
-    );
+    importReact(file);
+
+    declaration.replaceWith(Component);
   };
 
-  const getClassBody = (node) => {
-    const body = (node.body.type === "BlockStatement")
-      ? node.body.body : [t.returnStatement(node.body)]
-    ;
+  const FunctionDeclaration = (path, { file }) => {
+    const { name } = path.node.id;
 
-    const name = t.identifier("render");
-    const args = [];
+    if (!isCapitalized(name)) {
+      return;
+    }
 
-    const render = t.classMethod(
-      "method",
-      name,
-      args,
-      t.blockStatement([
-        ...declareParams(node.params),
-        ...body,
-      ], [])
-    );
+    if (!hasJSX(path)) {
+      return;
+    }
 
-    return t.classBody([
-      render,
-    ]);
+    const id = t.identifier(name);
+    const Component = functionToClass(id, path);
+
+    importReact(file);
+
+    if (path.parent.type === "ExportDefaultDeclaration") {
+      path.parentPath.replaceWith(Component);
+      path.parentPath.insertAfter(t.exportDefaultDeclaration(id));
+    } else if (path.parent.type === "CallExpression") {
+      if (path.parentPath.parentPath.type === "ExportDefaultDeclaration") {
+        path.replaceWith(id);
+        path.parentPath.parentPath.insertBefore(Component);
+      }
+    } else {
+      throw new Error(`Function => React.Component does not support parent type "${path.parent.type}"`);
+    }
   };
 
   return {
     visitor: {
-      FunctionDeclaration(path) {
-        if (
-          !hasComponentName(path.node) ||
-          !hasJSX(path)
-        ) {
-          return;
-        }
+      // const Component = () => {}
+      ArrowFunctionExpression: FunctionExpression,
 
-        if (!path.scope.parent.references.React) {
-          importReact(path.parentPath);
-        }
+      // function Component(...)
+      FunctionDeclaration,
 
-        path.replaceWith(functionToClass(path.node.id.name, path.node));
-      },
-
-      VariableDeclaration(path) {
-        const declaration = path.node.declarations[0];
-
-        if (
-          !isConst(path.node) ||
-          !hasComponentName(declaration) ||
-          !hasJSX(path)
-        ) {
-          return;
-        }
-
-        if (!path.scope.references.React) {
-          importReact(path.parentPath);
-        }
-
-        path.replaceWith(functionToClass(declaration.id.name, declaration.init));
-      },
-    },
-  };
+      // const Component = function(...)
+      FunctionExpression,
+    }
+  }
 }

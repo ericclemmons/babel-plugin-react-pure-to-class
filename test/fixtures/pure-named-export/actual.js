@@ -1,3 +1,3 @@
-export const Component = function({ children }) {
+export function Component({ children }) {
   return <div>{children}</div>;
 };

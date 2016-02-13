@@ -1,9 +1,7 @@
-const decorate = (options) => {
-  return (Component) => Component;
-};
+import decorate from "decorators";
 
 export default decorate({
-  doSomething: true,
+  something: true,
 })(function Component({ children }) {
   return <div>{children}</div>;
 });

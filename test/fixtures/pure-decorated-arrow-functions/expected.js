@@ -1,17 +1,15 @@
 import React from "react";
-
-const decorate = (options) => {
-  return (Component) => Component;
-};
+import decorate from "decorators";
 
 class Component extends React.Component {
   render() {
-    const { children } = this.props
+    const { children } = this.props;
 
     return <div>{children}</div>;
   }
+
 }
 
 export default decorate({
-  doSomething: true,
+  something: true
 })(Component);

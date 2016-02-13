@@ -9,15 +9,6 @@ const options = {
   plugins: [
     "syntax-jsx",
     "./src/plugin.js",
-    ["react-transform", {
-      transforms: [
-        {
-          transform: "react-transform-hmr",
-          imports: ["react"],
-          locals: ["module"],
-        },
-      ],
-    }]
   ],
 };
 
@@ -26,6 +17,7 @@ const trim = (str) => str.replace(/^\s+|\s+$/, "");
 describe("fixtures/", () => {
   fs.readdirSync(fixturesDir)
     .filter((folder) => folder.match(/^[a-z-]+$/))
+    // .filter((folder) => folder === "pure-decorated-arrow-functions")
     .forEach((folder) => {
       describe(`${folder}/`, () => {
         it("should match expected", () => {

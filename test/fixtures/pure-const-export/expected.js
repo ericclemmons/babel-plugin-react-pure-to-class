@@ -1,6 +1,5 @@
 import React from "react";
-
-class Component extends React.Component {
+export class Component extends React.Component {
   render() {
     const { children } = this.props;
 
@@ -8,5 +7,3 @@ class Component extends React.Component {
   }
 
 }
-
-export default Component;

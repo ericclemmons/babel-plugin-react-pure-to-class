@@ -1,7 +1,10 @@
 import React from "react";
-export default class Component extends React.Component {
+
+class Component extends React.Component {
   render() {
     return <p>Success!</p>;
   }
 
 }
+
+export default Component;
