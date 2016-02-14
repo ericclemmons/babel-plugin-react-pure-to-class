@@ -1,7 +1,7 @@
 {
-  "name": "babel-plugin-functional-hmr",
+  "name": "babel-plugin-react-pure-to-class",
   "version": "1.0.0",
-  "description": "Enable Hot Module Replacement (HMR) for Functional/Stateless Components",
+  "description": "Convert Functional Components to React Classes for Hot Module Replacement (HMR) & Transforms.",
   "main": "dist/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-register",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ericclemmons/babel-plugin-functional-hmr.git"
+    "url": "git+https://github.com/ericclemmons/babel-plugin-react-pure-to-class.git"
   },
   "keywords": [
     "babel-plugin",
@@ -21,9 +21,9 @@
   "author": "Eric Clemmons <eric@smarterspam.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ericclemmons/babel-plugin-functional-hmr/issues"
+    "url": "https://github.com/ericclemmons/babel-plugin-react-pure-to-class/issues"
   },
-  "homepage": "https://github.com/ericclemmons/babel-plugin-functional-hmr#readme",
+  "homepage": "https://github.com/ericclemmons/babel-plugin-react-pure-to-class#readme",
   "devDependencies": {
     "babel-core": "6.5.1",
     "babel-plugin-react-transform": "2.0.0",
