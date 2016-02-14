@@ -29,9 +29,6 @@ export default function({ types: t, template }) {
         ],
       )
     }
-
-    console.error(param.type, param);
-    throw new Error(`Unknown param type: ${param.type}`);
   };
 
   const declareParams = (params) => params.map(declareParam);
@@ -182,7 +179,6 @@ export default function({ types: t, template }) {
         path.parentPath.parentPath.insertBefore(Component);
       }
     } else {
-      throw new Error(`Function => React.Component does not support parent type "${path.parent.type}"`);
     }
   };
 
