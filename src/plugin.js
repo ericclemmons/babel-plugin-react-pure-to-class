@@ -1,6 +1,6 @@
 export default function({ types: t, template }) {
   const declareParam = (param, i) => {
-    if (param.type === "Identifier") {
+    if (t.isIdentifier(param)) {
       return t.variableDeclaration(
         "const",
         [
@@ -15,7 +15,7 @@ export default function({ types: t, template }) {
       );
     }
 
-    if (param.type === "ObjectPattern") {
+    if (t.isObjectPattern(param)) {
       return t.variableDeclaration(
         "const",
         [
@@ -58,7 +58,7 @@ export default function({ types: t, template }) {
   };
 
   const getClassBody = (path) => {
-    const body = (path.node.body.type === "BlockStatement")
+    const body = (t.isBlockStatement(path.node.body))
       ? path.node.body.body : [t.returnStatement(path.node.body)]
     ;
 
@@ -122,20 +122,20 @@ export default function({ types: t, template }) {
   const isCapitalized = (name) => name.match(/^[A-Z]\w+$/);
 
   const FunctionExpression = (path, { file }) => {
-    if (path.parent.type === "CallExpression") {
+    if (t.isCallExpression(path.parent)) {
       FunctionDeclaration(path, { file });
       return;
     }
 
     const variable = path.parent;
 
-    if (variable.type !== "VariableDeclarator") {
+    if (!t.isVariableDeclarator(variable)) {
       return;
     }
 
     const declaration = path.parentPath.parentPath;
 
-    if (declaration.type !== "VariableDeclaration") {
+    if (!t.isVariableDeclaration(declaration)) {
       return;
     }
 
@@ -173,11 +173,11 @@ export default function({ types: t, template }) {
     const id = t.identifier(name);
     const Component = functionToClass(id, path, { file });
 
-    if (path.parent.type === "ExportDefaultDeclaration") {
+    if (t.isExportDefaultDeclaration(path.parent)) {
       path.parentPath.replaceWith(Component);
       path.parentPath.insertAfter(t.exportDefaultDeclaration(id));
-    } else if (path.parent.type === "CallExpression") {
-      if (path.parentPath.parentPath.type === "ExportDefaultDeclaration") {
+    } else if (t.isCallExpression(path.parent)) {
+      if (t.isExportDefaultDeclaration(path.parentPath.parentPath)) {
         path.replaceWith(id);
         path.parentPath.parentPath.insertBefore(Component);
       }
