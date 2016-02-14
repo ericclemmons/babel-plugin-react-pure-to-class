@@ -17,17 +17,19 @@ export default {
           cacheDirectory: true,
           passPerPreset: true,
           presets: [
-            {
-              plugins: [
-                ["react-transform", {
-                  transforms: [{
-                    transform: "react-transform-hmr",
-                    imports: ["react"],
-                    locals: ["module"],
-                  }],
+            // Convert pure to Class
+            { plugins: ["../src/plugin.js"] },
+            // Enhance Classes
+            { plugins: [
+              ["react-transform", {
+                transforms: [{
+                  transform: "react-transform-hmr",
+                  imports: ["react"],
+                  locals: ["module"],
                 }],
-              ],
-            },
+              }],
+            ]},
+            // Convert to ES5
             "react",
             "es2015",
             "stage-0",

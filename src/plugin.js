@@ -36,8 +36,14 @@ export default function({ types: t, template }) {
 
   const declareParams = (params) => params.map(declareParam);
 
-  const functionToClass = (id, path) => {
-    const superClass = t.identifier("React.Component");
+  const functionToClass = (id, path, { file }) => {
+    const React = findReact(file);
+
+    const superClass = t.memberExpression(
+      t.identifier("React"),
+      t.identifier("Component"),
+    );
+
     const decorators = [];
     const body = getClassBody(path);
 
@@ -87,16 +93,30 @@ export default function({ types: t, template }) {
     return state.jsx;
   };
 
-  const importReact = (file) => {
-    if (!file.path.scope.references.React) {
-      const react = t.importDeclaration(
-        [t.importDefaultSpecifier(t.identifier("React"))],
-        t.stringLiteral("react"),
-      );
+  const findReact = (file) => {
+    const existing = file.path.node.body
+      .filter((path) => t.isImportDeclaration(path))
+      .map((path) => path.specifiers
+        .filter((path) => t.isImportDefaultSpecifier(path))
+        .map((path) => path.local)
+        .filter((id) => id.name === "React")
+        .shift()
+      )
+      .shift()
+    ;
 
-      const id = file.addImport("react", "default", "React");
-      id.name = "React";
+    if (existing) {
+      return existing;
     }
+
+    const React = t.importDeclaration(
+      [t.importDefaultSpecifier(t.identifier("React"))],
+      t.stringLiteral("react"),
+    );
+
+    file.path.node.body.unshift(React);
+
+    return React;
   }
 
   const isCapitalized = (name) => name.match(/^[A-Z]\w+$/);
@@ -134,9 +154,7 @@ export default function({ types: t, template }) {
     }
 
     const id = t.identifier(name);
-    const Component = functionToClass(id, path);
-
-    importReact(file);
+    const Component = functionToClass(id, path, { file });
 
     declaration.replaceWith(Component);
   };
@@ -153,9 +171,7 @@ export default function({ types: t, template }) {
     }
 
     const id = t.identifier(name);
-    const Component = functionToClass(id, path);
-
-    importReact(file);
+    const Component = functionToClass(id, path, { file });
 
     if (path.parent.type === "ExportDefaultDeclaration") {
       path.parentPath.replaceWith(Component);
