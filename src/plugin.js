@@ -178,7 +178,10 @@ export default function({ types: t, template }) {
         path.replaceWith(id);
         path.parentPath.parentPath.insertBefore(Component);
       }
-    } else {
+    } else if (t.isExportNamedDeclaration(path.parent)) {
+      path.replaceWith(Component);
+    } else if (t.isProgram(path.parent)) {
+      path.replaceWith(Component);
     }
   };
 

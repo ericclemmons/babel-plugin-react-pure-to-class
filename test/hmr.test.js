@@ -8,8 +8,8 @@ export default function Component({ children }) {
 `;
 
 const expected = `
+import _react from "react";
 import _reactTransformHmr from "react-transform-hmr";
-import React from "react";
 const _components = {
   Component: {
     displayName: "Component"
@@ -20,7 +20,7 @@ const _reactTransformHmr2 = _reactTransformHmr({
   filename: "unknown",
   components: _components,
   locals: [module],
-  imports: [React]
+  imports: [_react]
 });
 
 function _wrapComponent(id) {
@@ -28,6 +28,8 @@ function _wrapComponent(id) {
     return _reactTransformHmr2(Component, id);
   };
 }
+
+import React from "react";
 
 const Component = _wrapComponent("Component")(class Component extends React.Component {
   render() {
@@ -44,30 +46,23 @@ export default Component;
 const options = {
   passPerPreset: true,
   presets: [
-    {
-      plugins: [
-        "syntax-jsx",
-        "./src/plugin.js",
-      ]
-    },
-    {
-      plugins: [
-        ["react-transform", {
-          transforms: [{
-            transform: "react-transform-hmr",
-            imports: ["react"],
-            locals: ["module"],
-          }],
+    { plugins: ["syntax-jsx", "./src/plugin.js" ] },
+    { plugins: [
+      ["react-transform", {
+        transforms: [{
+          transform: "react-transform-hmr",
+          imports: ["react"],
+          locals: ["module"],
         }],
-      ],
-    },
+      }],
+    ]},
   ],
 };
 
 const trim = (str) => str.replace(/^\s+|\s+$/g, "");
 
 describe("react-transform-hmr", () => {
-  it.only("should modify the transformed Class", () => {
+  it("should modify the transformed Class", () => {
     const transformed = babel.transform(actual, options).code;
 
     expect(trim(transformed)).toEqual(trim(expected));

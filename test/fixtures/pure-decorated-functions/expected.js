@@ -1,5 +1,4 @@
 import React from "react";
-import decorate from "decorators";
 
 class Component extends React.Component {
   render() {
@@ -9,6 +8,8 @@ class Component extends React.Component {
   }
 
 }
+
+import decorate from "decorators";
 
 export default decorate({
   something: true

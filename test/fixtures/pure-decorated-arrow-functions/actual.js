@@ -6,4 +6,4 @@ const Component = ({ children }) => {
 
 export default decorate({
   something: true,
-})(Component);
+})(Component)
