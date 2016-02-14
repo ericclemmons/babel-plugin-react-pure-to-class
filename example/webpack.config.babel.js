@@ -17,18 +17,20 @@ export default {
           cacheDirectory: true,
           passPerPreset: true,
           presets: [
+            {
+              plugins: [
+                ["react-transform", {
+                  transforms: [{
+                    transform: "react-transform-hmr",
+                    imports: ["react"],
+                    locals: ["module"],
+                  }],
+                }],
+              ],
+            },
             "react",
             "es2015",
             "stage-0",
-          ],
-          plugins: [
-            ["react-transform", {
-              transforms: [{
-                transform: "react-transform-hmr",
-                imports: ["react"],
-                locals: ["module"],
-              }],
-            }],
           ],
         },
         exclude: /node_modules/,
