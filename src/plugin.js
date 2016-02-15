@@ -157,9 +157,13 @@ export default function({ types: t, template }) {
   };
 
   const FunctionDeclaration = (path, { file }) => {
-    const { name } = path.node.id;
+    const { id } = path.node;
 
-    if (!isCapitalized(name)) {
+    if (!id) {
+      return;
+    }
+
+    if (!isCapitalized(id.name)) {
       return;
     }
 
@@ -167,7 +171,6 @@ export default function({ types: t, template }) {
       return;
     }
 
-    const id = t.identifier(name);
     const Component = functionToClass(id, path, { file });
 
     if (t.isExportDefaultDeclaration(path.parent)) {
