@@ -2,8 +2,10 @@
   "name": "babel-plugin-react-pure-to-class",
   "version": "1.0.0",
   "description": "Convert Functional Components to React Classes for Hot Module Replacement (HMR) & Transforms.",
-  "main": "dist/index.js",
+  "main": "dist/plugin.js",
   "scripts": {
+    "build": "babel src -d dist",
+    "clean": "rimraf dist",
     "test": "mocha --compilers js:babel-register",
     "watch": "npm test -- --bail --watch"
   },
@@ -25,6 +27,7 @@
   },
   "homepage": "https://github.com/ericclemmons/babel-plugin-react-pure-to-class#readme",
   "devDependencies": {
+    "babel-cli": "6.5.1",
     "babel-core": "6.5.1",
     "babel-plugin-react-transform": "2.0.0",
     "babel-plugin-syntax-jsx": "6.5.0",
@@ -33,6 +36,7 @@
     "babel-register": "6.5.1",
     "expect": "1.14.0",
     "mocha": "2.4.5",
-    "react-transform-hmr": "1.0.2"
+    "react-transform-hmr": "1.0.2",
+    "rimraf": "2.5.2"
   }
 }
