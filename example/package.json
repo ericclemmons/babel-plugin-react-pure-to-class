@@ -9,7 +9,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "babel-loader": "6.2.2",
     "babel-plugin-react-transform": "2.0.0",
